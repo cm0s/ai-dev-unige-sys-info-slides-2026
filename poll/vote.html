@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote — Cours UNIGE</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #151515;
+            color: #F8F9FA;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .vote-container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .question {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .vote-btn {
+            background: rgba(35, 35, 35, 0.85);
+            border: 2px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            color: #F8F9FA;
+            font-size: 1.1rem;
+            font-family: inherit;
+            padding: 1.2rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .vote-btn:hover, .vote-btn:focus {
+            border-color: #CF0063;
+            background: rgba(207, 0, 99, 0.08);
+            transform: translateY(-2px);
+        }
+        .vote-btn:active {
+            transform: scale(0.97);
+        }
+        .vote-btn.selected {
+            border-color: #CF0063;
+            background: rgba(207, 0, 99, 0.15);
+            box-shadow: 0 0 20px rgba(207, 0, 99, 0.2);
+        }
+        .vote-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .thank-you {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            animation: fadeIn 0.4s ease;
+        }
+        .thank-you.visible {
+            display: flex;
+        }
+        .thank-you .check {
+            font-size: 3rem;
+        }
+        .thank-you p {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+        }
+        .branding {
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.3);
+        }
+        .waiting {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+        .waiting.visible {
+            display: block;
+        }
+        .waiting p {
+            font-size: 1.1rem;
+            color: #A0AEC0;
+            margin-top: 1rem;
+        }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #CF0063;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="vote-container">
+        <!-- Waiting state (no active poll) -->
+        <div id="waiting" class="waiting visible">
+            <div class="spinner"></div>
+            <p>En attente d'une question…</p>
+        </div>
+
+        <!-- Vote state -->
+        <div id="vote-area" style="display: none;">
+            <h1 id="poll-question"></h1>
+            <p class="question" id="poll-subtitle"></p>
+            <div id="options" class="options"></div>
+        </div>
+
+        <!-- Thank you state -->
+        <div id="thank-you" class="thank-you">
+            <div class="check">✅</div>
+            <h1>Merci !</h1>
+            <p>Votre vote a été enregistré.</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script>
+        // ─── FIREBASE CONFIG ───
+        // Replace with your own Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBlh1s-I5ikGYJfZ6dandBkLFO8JDgMCg0",
+            authDomain: "ai-dev-unige-sys-info-2026.firebaseapp.com",
+            projectId: "ai-dev-unige-sys-info-2026",
+            databaseURL: "https://ai-dev-unige-sys-info-2026-default-rtdb.europe-west1.firebasedatabase.app",
+            storageBucket: "ai-dev-unige-sys-info-2026.firebasestorage.app",
+            messagingSenderId: "147237324026",
+            appId: "1:147237324026:web:699294fae3eb0a313eb543",
+            measurementId: "G-P6NM6KCPYC"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Generate or retrieve a voter ID (prevents double-voting)
+        let voterId = localStorage.getItem('unige-poll-voter-id');
+        if (!voterId) {
+            voterId = 'v_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('unige-poll-voter-id', voterId);
+        }
+
+        const waitingEl = document.getElementById('waiting');
+        const voteArea = document.getElementById('vote-area');
+        const thankYouEl = document.getElementById('thank-you');
+        const optionsEl = document.getElementById('options');
+        const questionEl = document.getElementById('poll-question');
+        const subtitleEl = document.getElementById('poll-subtitle');
+
+        let currentPollId = null;
+        let hasVoted = false;
+
+        // Listen for active poll
+        db.ref('active_poll').on('value', (snapshot) => {
+            const poll = snapshot.val();
+
+            if (!poll || !poll.active) {
+                // No active poll
+                waitingEl.classList.add('visible');
+                voteArea.style.display = 'none';
+                thankYouEl.classList.remove('visible');
+                currentPollId = null;
+                hasVoted = false;
+                return;
+            }
+
+            currentPollId = poll.id;
+
+            // Check if already voted
+            db.ref(`polls/${currentPollId}/voters/${voterId}`).once('value', (voteSnap) => {
+                if (voteSnap.exists()) {
+                    hasVoted = true;
+                    waitingEl.classList.remove('visible');
+                    voteArea.style.display = 'none';
+                    thankYouEl.classList.add('visible');
+                    return;
+                }
+
+                // Show voting UI
+                hasVoted = false;
+                waitingEl.classList.remove('visible');
+                thankYouEl.classList.remove('visible');
+                voteArea.style.display = 'block';
+
+                questionEl.textContent = poll.question || 'Vote';
+                subtitleEl.textContent = poll.subtitle || '';
+
+                optionsEl.innerHTML = '';
+                (poll.options || []).forEach((option, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'vote-btn';
+                    btn.textContent = option;
+                    btn.addEventListener('click', () => submitVote(index, option, btn));
+                    optionsEl.appendChild(btn);
+                });
+            });
+        });
+
+        function submitVote(index, label, btn) {
+            if (hasVoted || !currentPollId) return;
+            hasVoted = true;
+
+            // Disable all buttons
+            document.querySelectorAll('.vote-btn').forEach(b => {
+                b.disabled = true;
+            });
+            btn.classList.add('selected');
+
+            const updates = {};
+            updates[`polls/${currentPollId}/voters/${voterId}`] = { option: index, ts: Date.now() };
+
+            db.ref().update(updates).then(() => {
+                // Increment vote count
+                db.ref(`polls/${currentPollId}/results/${index}`).transaction((count) => {
+                    return (count || 0) + 1;
+                });
+
+                setTimeout(() => {
+                    voteArea.style.display = 'none';
+                    thankYouEl.classList.add('visible');
+                }, 600);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poll Admin — Cours UNIGE</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #151515;
+      color: #F8F9FA;
+      padding: 2rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      color: #CF0063;
+      margin-bottom: 1rem;
+      margin-top: 2rem;
+    }
+
+    .poll-preset {
+      background: rgba(35, 35, 35, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .poll-preset:hover {
+      border-color: #CF0063;
+      transform: translateY(-2px);
+    }
+
+    .poll-preset h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .poll-preset .opts {
+      font-size: 0.9rem;
+      color: #A0AEC0;
+    }
+
+    .btn {
+      background: #CF0063;
+      color: #fff;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn:hover {
+      background: #E6127A;
+    }
+
+    .btn.danger {
+      background: #444;
+    }
+
+    .btn.danger:hover {
+      background: #666;
+    }
+
+    .status {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: rgba(35, 35, 35, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+    }
+
+    .status .live {
+      color: #CF0063;
+      font-weight: 600;
+    }
+
+    .results-mini {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .results-mini div {
+      margin-bottom: 0.4rem;
+    }
+
+    .custom-form {
+      margin-top: 1rem;
+    }
+
+    .custom-form input, .custom-form textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 0.8rem;
+      background: rgba(35, 35, 35, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #F8F9FA;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    .custom-form textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+  </style>
+</head>
+<body>
+<h1>🎛️ Poll Admin</h1>
+
+<div id="status" class="status">
+  <div>Statut : <span id="status-text">Aucun poll actif</span></div>
+  <div id="live-results" class="results-mini"></div>
+  <div style="margin-top: 1rem;">
+    <button class="btn danger" onclick="stopPoll()">Arrêter le poll</button>
+    <button class="btn danger" onclick="resetAll()">Reset tout</button>
+  </div>
+</div>
+
+<h2>Polls pré-définis</h2>
+
+<div class="poll-preset" onclick="launchPreset(0)">
+  <h3>🙋 Qui utilise déjà l'IA pour coder ?</h3>
+  <div class="opts">Constamment · De temps en temps · J'ai essayé 1-2 fois · Pas encore/Jamais</div>
+</div>
+
+<div class="poll-preset" onclick="launchPreset(1)">
+  <h3>🚀 Qui envisage de devenir entrepreneur·e ?</h3>
+  <div class="opts">Oui, c'est mon plan · Peut-être un jour · Non, pas pour moi</div>
+</div>
+
+<div class="poll-preset" onclick="launchPreset(2)">
+  <h3>🤖 L'IA va-t-elle remplacer les développeurs ?</h3>
+  <div class="opts">Oui, à terme · Partiellement · Non, jamais</div>
+</div>
+
+<div class="poll-preset" onclick="launchPreset(3)">
+  <h3>🎓 Faut-il interdire l'IA dans les projets étudiants ?</h3>
+  <div class="opts">Oui · Non · Ça dépend du contexte</div>
+</div>
+
+<h2>Poll personnalisé</h2>
+<div class="custom-form">
+  <input type="text" id="custom-question" placeholder="Question">
+  <input type="text" id="custom-subtitle" placeholder="Sous-titre (optionnel)">
+  <textarea id="custom-options" placeholder="Options (une par ligne)"></textarea>
+  <button class="btn" onclick="launchCustom()">Lancer</button>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+  // ─── FIREBASE CONFIG ───
+  // Same config as vote.html — replace with yours
+  const firebaseConfig = {
+    apiKey: "AIzaSyBlh1s-I5ikGYJfZ6dandBkLFO8JDgMCg0",
+    authDomain: "ai-dev-unige-sys-info-2026.firebaseapp.com",
+    projectId: "ai-dev-unige-sys-info-2026",
+    databaseURL: "https://ai-dev-unige-sys-info-2026-default-rtdb.europe-west1.firebasedatabase.app",
+    storageBucket: "ai-dev-unige-sys-info-2026.firebasestorage.app",
+    messagingSenderId: "147237324026",
+    appId: "1:147237324026:web:699294fae3eb0a313eb543",
+    measurementId: "G-P6NM6KCPYC"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const presets = [
+    {
+      question: "Qui utilise déjà l'IA pour coder ?",
+      subtitle: "",
+      options: ["Constamment", "De temps en temps", "J'ai essayé 1-2 fois", "Pas encore/Jamais"]
+    },
+    {
+      question: "Qui envisage de devenir entrepreneur·e ?",
+      subtitle: "",
+      options: ["Oui, c'est mon plan", "Peut-être un jour", "Non, pas pour moi"]
+    },
+
+
+    {
+      question: "L'IA va-t-elle remplacer les développeurs ?",
+      subtitle: "",
+      options: ["Oui, à terme", "Partiellement", "Non, jamais"]
+    },
+    {
+      question: "Faut-il interdire l'IA dans les projets étudiants ?",
+      subtitle: "",
+      options: ["Oui", "Non", "Ça dépend du contexte"]
+    }
+  ];
+
+  function launchPoll(pollData) {
+    const pollId = 'poll_' + Date.now();
+    const updates = {};
+    updates['active_poll'] = {
+      id: pollId,
+      active: true,
+      question: pollData.question,
+      subtitle: pollData.subtitle || '',
+      options: pollData.options
+    };
+    // Initialize results to 0
+    const results = {};
+    pollData.options.forEach((_, i) => {
+      results[i] = 0;
+    });
+    updates[`polls/${pollId}/results`] = results;
+    updates[`polls/${pollId}/meta`] = {
+      question: pollData.question,
+      options: pollData.options,
+      created: Date.now()
+    };
+
+    db.ref().update(updates);
+  }
+
+  function launchPreset(index) {
+    launchPoll(presets[index]);
+  }
+
+  function launchCustom() {
+    const q = document.getElementById('custom-question').value.trim();
+    const sub = document.getElementById('custom-subtitle').value.trim();
+    const opts = document.getElementById('custom-options').value.trim().split('\n').filter(
+        o => o.trim());
+    if (!q || opts.length < 2) {
+      alert('Question + au moins 2 options');
+      return;
+    }
+    launchPoll({question: q, subtitle: sub, options: opts});
+  }
+
+  function stopPoll() {
+    db.ref('active_poll/active').set(false);
+  }
+
+  function resetAll() {
+    if (!confirm('Supprimer tous les résultats ?')) {
+      return;
+    }
+    db.ref('active_poll').remove();
+    db.ref('polls').remove();
+  }
+
+  // Live status
+  db.ref('active_poll').on('value', (snap) => {
+    const poll = snap.val();
+    const statusText = document.getElementById('status-text');
+    const liveResults = document.getElementById('live-results');
+
+    if (!poll || !poll.active) {
+      statusText.textContent = 'Aucun poll actif';
+      statusText.className = '';
+      liveResults.innerHTML = '';
+      return;
+    }
+
+    statusText.textContent = `LIVE — ${poll.question}`;
+    statusText.className = 'live';
+
+    // Listen to results
+    db.ref(`polls/${poll.id}/results`).on('value', (resSnap) => {
+      const results = resSnap.val() || {};
+      let html = '';
+      let total = 0;
+      Object.values(results).forEach(v => total += v);
+
+      (poll.options || []).forEach((opt, i) => {
+        const count = results[i] || 0;
+        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+        html += `<div>${opt}: <strong>${count}</strong> (${pct}%)</div>`;
+      });
+      html += `<div style="margin-top: 0.5rem; color: #A0AEC0;">Total: ${total} votes</div>`;
+      liveResults.innerHTML = html;
+    });
+  });
+</script>
+</body>
+</html>
