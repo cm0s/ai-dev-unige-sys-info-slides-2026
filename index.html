@@ -23,8 +23,12 @@
 
 <div class="presentation-frame">
   <img src="UNIGE_tout_blanc.gif" class="unige-logo" alt="Université de Genève">
+  <div class="theme-tracker" aria-live="polite">
+    <div class="theme-kicker">Thème en cours</div>
+    <div id="theme-steps" class="theme-steps"></div>
+  </div>
   <div id="deck" class="deck">
-    <section class="slide active">
+    <section class="slide active" data-theme="context">
       <canvas id="particle-canvas" class="particle-canvas"></canvas>
       <div class="content hero" style="position: relative; z-index: 2;">
         <div class="tag">Systèmes d'information et science des services — UNIGE</div>
@@ -34,7 +38,7 @@
       </div>
     </section>
 
-    <section class="slide slide-code-agent">
+    <section class="slide slide-code-agent" data-theme="context">
       <header>
         <h2>Behind the click</h2>
       </header>
@@ -76,28 +80,24 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="context">
       <header>
         <h2>Au programme aujourd'hui</h2>
       </header>
       <div class="content flex-center agenda-content" style="align-items: center;">
         <div class="glass-card agenda-card" style="padding: 2rem 3rem; max-width: 700px; width: 100%;">
           <ul class="styled-bullets agenda-list">
-            <li><span>🔍 Spectre de l'IA dans le dev</span></li>
-            <li><span>🤖 Qu'est-ce qu'un agent IA ?</span></li>
-            <li><span>🛠️ Retour d'expérience</span></li>
-            <li><span>📐 Bonnes pratiques & cadrage</span></li>
-            <li><span>💻 Démo live</span></li>
-            <li><span>⚠️ Limites concrètes & sécurité</span></li>
-            <li><span>🔄 Implications pour le métier</span></li>
-            <li><span>🚀 Et demain ?</span></li>
-            <li class="agenda-item-right"><span>💬 Discussion ouverte</span></li>
+            <li><span>🧭 <strong>Contexte</strong> — pourquoi ce sujet maintenant ?</span></li>
+            <li><span>🤖 <strong>Fondamentaux</strong> — spectre IA et agents de code</span></li>
+            <li><span>🛠️ <strong>Pratique</strong> — retour terrain de l'équipe RockSolid</span></li>
+            <li><span>🧪 <strong>Cadrage</strong> — tests, limites, sécurité et discipline</span></li>
+            <li class="agenda-item-right"><span>🚀 <strong>Perspectives</strong> — entrepreneuriat et discussion ouverte</span></li>
           </ul>
         </div>
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="context">
       <header>
         <h2>Sondage</h2>
       </header>
@@ -129,7 +129,7 @@
 
     <!-- ── Qu'est-ce que le développement assisté par IA ? (~10 min) ── -->
 
-    <section class="slide">
+    <section class="slide" data-theme="fundamentals">
       <header>
         <h2>Le spectre du développement assisté par IA</h2>
       </header>
@@ -175,7 +175,7 @@
       </div>
     </section>
 
-    <section class="slide" id="slide-what-is-code-agent">
+    <section class="slide" id="slide-what-is-code-agent" data-theme="fundamentals">
       <header>
         <h2>Qu'est-ce qu'un agent IA pour le code ?</h2>
       </header>
@@ -201,7 +201,7 @@
 
     <!-- ── Retour d'expérience — notre équipe (~15 min) ── -->
 
-    <section class="slide">
+    <section class="slide" data-theme="practice">
       <header>
         <h2>Outils agentiques mainstream</h2>
       </header>
@@ -243,7 +243,7 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="practice">
       <header>
         <h2>Cas concret : Déclaration télétravail</h2>
       </header>
@@ -269,7 +269,7 @@
         Application live</a>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="practice">
       <header>
         <h2>Réduire la distance entre idée et démonstration</h2>
       </header>
@@ -295,7 +295,7 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="practice">
       <header>
         <h2>Ce qu'on a vraiment gagné</h2>
       </header>
@@ -345,7 +345,7 @@
 
     <!-- ── Les bonnes pratiques (~10 min) ── -->
 
-    <section class="slide">
+    <section class="slide" data-theme="governance">
       <header>
         <h2>Le modèle compte. Le cadre compte encore plus.</h2>
       </header>
@@ -379,7 +379,7 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="governance">
       <header>
         <h2>Le problème de l'IA ≠ votre problème</h2>
       </header>
@@ -399,7 +399,7 @@
       </div>
     </section>
 
-    <section class="slide slide-testing-ai">
+    <section class="slide slide-testing-ai" data-theme="governance">
       <header>
         <h2>Tester avec l'IA</h2>
       </header>
@@ -459,7 +459,7 @@
 
     <!-- ── Les limites concrètes (~10 min) ── -->
 
-    <section class="slide">
+    <section class="slide" data-theme="governance">
       <header>
         <h2>Plus rapide, pas plus simple</h2>
       </header>
@@ -482,7 +482,7 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="governance">
       <header>
         <h2>Sécurité : isoler l'IA avec DevContainer</h2>
       </header>
@@ -509,7 +509,7 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="governance">
       <header>
         <h2>Plus de puissance = plus de discipline</h2>
       </header>
@@ -533,7 +533,7 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="governance">
       <header>
         <h2>Le rôle du·de la développeur·euse change</h2>
       </header>
@@ -564,7 +564,7 @@
 
     <!-- ── Conseils & discussion (~15+ min) ── -->
 
-    <section class="slide">
+    <section class="slide" data-theme="outlook">
       <header>
         <h2>N'attendez pas le « bon cours »</h2>
       </header>
@@ -594,7 +594,7 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="outlook">
       <header>
         <h2>Sondage</h2>
       </header>
@@ -623,7 +623,7 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide" data-theme="outlook">
       <header>
         <h2>L'esprit entrepreneurial</h2>
       </header>
@@ -646,7 +646,7 @@
 
     <!-- ── Et demain ? (~5 min) ── -->
 
-    <section class="slide">
+    <section class="slide" data-theme="outlook">
       <header>
         <h2>Et demain ?</h2>
       </header>
@@ -679,7 +679,7 @@
 
     <!-- ── Discussion ouverte (~15 min) ── -->
 
-    <section class="slide discussion-slide">
+    <section class="slide discussion-slide" data-theme="outlook">
       <canvas id="discussion-canvas" class="discussion-canvas"></canvas>
       <div class="content discussion-content">
         <div class="discussion-panel glass-card">
@@ -701,7 +701,7 @@
     <div id="dots-container" class="dots-container"></div>
     <div class="nav-buttons">
       <button id="btn-prev" class="nav-btn" aria-label="Précédent" disabled>←</button>
-      <span id="slide-counter" class="counter">1 / 22</span>
+      <span id="slide-counter" class="counter">1 / 20</span>
       <button id="btn-next" class="nav-btn" aria-label="Suivant">→</button>
     </div>
   </div>

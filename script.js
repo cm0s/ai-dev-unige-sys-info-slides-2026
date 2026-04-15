@@ -4,6 +4,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnNext = document.getElementById('btn-next');
     const counter = document.getElementById('slide-counter');
     const progress = document.getElementById('progress');
+    const currentThemeLabel = document.getElementById('current-theme-label');
+    const themeSteps = document.getElementById('theme-steps');
+
+    const THEME_LABELS = {
+        context: 'Contexte et objectifs',
+        fundamentals: 'Fondamentaux IA',
+        practice: 'Pratique terrain',
+        governance: 'Methodes, tests et limites',
+        outlook: 'Perspectives et discussion'
+    };
 
     let currentSlide = 0;
 
@@ -21,16 +31,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function init() {
         const dotsContainer = document.getElementById('dots-container');
+        const seenThemes = new Set();
 
         slides.forEach((slide, index) => {
+            const themeKey = slide.dataset.theme || 'context';
+            slide.dataset.theme = themeKey;
             const fragments = slide.querySelectorAll('.fragment');
             slide.dataset.currentFragment = -1;
             slide.dataset.totalFragments = fragments.length;
+
+            if (!seenThemes.has(themeKey)) {
+                seenThemes.add(themeKey);
+                if (themeSteps) {
+                    const step = document.createElement('span');
+                    step.classList.add('theme-step');
+                    step.dataset.theme = themeKey;
+                    step.textContent = THEME_LABELS[themeKey] || themeKey;
+                    themeSteps.appendChild(step);
+                }
+            }
             
             // Generate dot button
             if (dotsContainer) {
                 const dot = document.createElement('button');
                 dot.classList.add('dot-btn');
+                dot.dataset.theme = themeKey;
                 dot.title = `Aller à la slide ${index + 1}`;
                 dot.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -74,6 +99,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 dot.classList.remove('active');
             }
         });
+
+        updateThemeView();
+    }
+
+    function updateThemeView() {
+        const activeSlide = slides[currentSlide];
+        if (!activeSlide) {
+            return;
+        }
+
+        const activeTheme = activeSlide.dataset.theme || 'context';
+        const activeThemeLabel = THEME_LABELS[activeTheme] || activeTheme;
+
+        if (currentThemeLabel) {
+            currentThemeLabel.textContent = activeThemeLabel;
+        }
+
+        document.body.dataset.currentTheme = activeTheme;
+
+        if (themeSteps) {
+            const steps = themeSteps.querySelectorAll('.theme-step');
+            steps.forEach((step) => {
+                step.classList.toggle('active', step.dataset.theme === activeTheme);
+            });
+        }
     }
 
     function isLastFragment() {
