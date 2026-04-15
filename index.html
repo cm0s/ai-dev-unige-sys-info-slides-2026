@@ -383,7 +383,7 @@
       <header>
         <h2>Le problème de l'IA ≠ votre problème</h2>
       </header>
-      <div class="content flex-center" style="flex-direction: column; gap: 2.5rem;">
+      <div class="content flex-center" style="flex-direction: column; gap: 0.5rem;">
         <div class="hero-quote" style="font-size: 2.2rem; max-width: 85%;">
           <strong>Le problème que l'IA pense devoir résoudre<br>et celui que <span
               class="text-gradient">vous</span> voulez résoudre<br>ne sont pas forcément les mêmes.</strong>
@@ -399,42 +399,56 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide slide-testing-ai">
       <header>
         <h2>Tester avec l'IA</h2>
       </header>
-      <div class="content">
-        <div class="comparison-grid" style="grid-template-columns: repeat(3, 1fr); gap: 2rem;">
-          <div class="comp-col glass-card border-pink">
+      <div class="content testing-ai-content">
+        <div class="comparison-grid testing-ai-grid" style="grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+          <div class="comp-col glass-card border-pink testing-ai-card">
             <div style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem;">🔬</div>
             <div class="comp-header" style="font-size: 1.8rem;">Tests unitaires</div>
-            <ul class="staggered-list styled-bullets" style="font-size: 1.3rem;">
-              <li><span>Génération rapide de cas de test</span></li>
-              <li><span>Couverture plus complète</span></li>
-              <li><span>Edge cases souvent oubliés</span></li>
+            <ul class="staggered-list styled-bullets" style="font-size: 1.4rem;">
+              <li><span>Test d'un composant ou d'une fonction de manière isolée</span></li>
             </ul>
           </div>
-          <div class="comp-col glass-card border-pink">
+          <div class="comp-col glass-card border-pink testing-ai-card">
             <div style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem;">🔗</div>
-            <div class="comp-header" style="font-size: 1.8rem;">Tests d'intégration</div>
-            <ul class="staggered-list styled-bullets" style="font-size: 1.3rem;">
-              <li><span>Backend + Frontend ensemble</span></li>
-              <li><span>Scénarios complexes</span></li>
-              <li><span>Mocking assisté par l'IA</span></li>
+            <div class="comp-header" style="font-size: 1.8rem;">Tests backend (JUnit)</div>
+            <ul class="staggered-list styled-bullets" style="font-size: 1.4rem;">
+              <li><span>Test d'intégration du backend avec base de données, API ou données simulées</span></li>
             </ul>
           </div>
-          <div class="comp-col glass-card border-pink">
+          <div class="comp-col glass-card border-pink testing-ai-card">
             <div style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem;">🌐</div>
-            <div class="comp-header" style="font-size: 1.8rem;">Tests E2E — Cypress</div>
-            <ul class="staggered-list styled-bullets" style="font-size: 1.3rem;">
-              <li><span>Scénarios utilisateur complets</span></li>
-              <li><span>L'IA génère les sélecteurs</span></li>
-              <li><span>Maintenance simplifiée</span></li>
+            <div class="comp-header" style="font-size: 1.8rem;">Tests Frontend (Cypress)</div>
+            <ul class="staggered-list styled-bullets" style="font-size: 1.4rem;">
+              <li><span>Test end-to-end d'un parcours utilisateur dans l'interface</span></li>
             </ul>
           </div>
         </div>
-        <div class="hero-quote" style="margin-top: 2rem; font-size: 1.6rem;">
-          <strong>L'IA excelle à écrire les tests que personne n'a envie d'écrire</strong>
+        <div class="glass-card testing-ai-shared-card">
+          <div class="testing-ai-shared-title">
+            Ce que l'IA apporte à l'ensemble des tests
+          </div>
+          <div class="testing-ai-shared-grid">
+            <div class="testing-ai-shared-item">
+              <span class="testing-ai-shared-bullet">›</span>
+              <span>Couverture plus complète et edge cases souvent oubliés</span>
+            </div>
+            <div class="testing-ai-shared-item">
+              <span class="testing-ai-shared-bullet">›</span>
+              <span>Scénarios de test plus rapides à écrire, y compris les cas complexes</span>
+            </div>
+            <div class="testing-ai-shared-item">
+              <span class="testing-ai-shared-bullet">›</span>
+              <span>Génération assistée de mocks, fixtures et sélecteurs</span>
+            </div>
+            <div class="testing-ai-shared-item">
+              <span class="testing-ai-shared-bullet">›</span>
+              <span>Maintenance et évolution des suites de tests simplifiées</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -533,7 +547,6 @@
             <li><span>Tests et validation</span></li>
             <li><span>Pas de données personnelles sensibles</span></li>
             <li><span>Pas de secrets dans les prompts</span></li>
-            <li><span>Offres entreprise nécessaires</span></li>
           </ul>
         </div>
         <div class="col flex-center">
@@ -565,14 +578,11 @@
             <div class="comp-header">Questions ouvertes</div>
             <ul class="staggered-list styled-bullets" style="font-size: 1.5rem;">
               <li><span>Le « paradoxe du junior »</span></li>
-              <li><span>Comment apprend-on sans faire ?</span></li>
+              <li><span>Peut-on apprend-on sans faire ?</span></li>
               <li><span>Qui est responsable du code IA ?</span></li>
               <li><span>Quelle place pour la créativité ?</span></li>
             </ul>
           </div>
-        </div>
-        <div class="hero-quote" style="margin-top: 2rem; font-size: 1.7rem;">
-          <strong>L'IA ne supprime pas la rigueur. Elle la déplace <span class="text-gradient">plus en amont</span>.</strong>
         </div>
       </div>
     </section>
@@ -611,7 +621,7 @@
 
     <section class="slide">
       <header>
-        <h2>L'esprit entrepreneurial</h2>
+        <h2>Sondage</h2>
       </header>
       <div class="content"
            style="display: flex; flex-direction: row; gap: 3rem; align-items: center; justify-content: center;">
@@ -688,9 +698,6 @@
           <div class="h-item">Nouvelles expérimentations</div>
           <div class="h-item">Industrialisation</div>
           <div class="h-item">Sécurisation</div>
-        </div>
-        <div class="hero-quote slide-up" style="margin-top: 2rem;">
-          <strong>L'IA ne supprime pas la rigueur.<br>Elle la déplace <span class="text-gradient">plus en amont</span>.</strong>
         </div>
       </div>
     </section>
