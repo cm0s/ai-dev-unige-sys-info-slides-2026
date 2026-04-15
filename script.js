@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         context: 'Contexte et objectifs',
         fundamentals: 'Fondamentaux IA',
         practice: 'Pratique terrain',
-        governance: 'Methodes, tests et limites',
+        governance: 'Cadrage',
         outlook: 'Perspectives et discussion'
     };
 
