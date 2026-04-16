@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const progress = document.getElementById('progress');
     const currentThemeLabel = document.getElementById('current-theme-label');
     const themeSteps = document.getElementById('theme-steps');
+    const prefersTouchNavigation = window.matchMedia('(pointer: coarse)').matches;
 
     const THEME_LABELS = {
         context: 'Contexte et objectifs',
@@ -76,11 +77,16 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Allow clicking anywhere to go next if it's the active slide
             slide.addEventListener('click', (e) => {
-                // Don't trigger if they clicked a button
-                if (!e.target.closest('.nav-btn')) {
-                    if (index === currentSlide) {
-                        next();
-                    }
+                const clickedInteractive = e.target.closest('a, button, input, select, textarea, label, canvas');
+                if (clickedInteractive) {
+                    return;
+                }
+                // On touch devices, avoid accidental next while scrolling/tapping content.
+                if (prefersTouchNavigation) {
+                    return;
+                }
+                if (index === currentSlide) {
+                    next();
                 }
             });
         });
