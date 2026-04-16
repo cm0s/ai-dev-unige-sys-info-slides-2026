@@ -43,10 +43,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!seenThemes.has(themeKey)) {
                 seenThemes.add(themeKey);
                 if (themeSteps) {
-                    const step = document.createElement('span');
+                    const step = document.createElement('button');
                     step.classList.add('theme-step');
                     step.dataset.theme = themeKey;
                     step.textContent = THEME_LABELS[themeKey] || themeKey;
+                    step.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Find index of first slide with this theme
+                        const firstIdx = Array.from(slides).findIndex(
+                            s => s.dataset.theme === themeKey
+                        );
+                        if (firstIdx !== -1) {
+                            goToSlide(firstIdx);
+                        }
+                    });
                     themeSteps.appendChild(step);
                 }
             }

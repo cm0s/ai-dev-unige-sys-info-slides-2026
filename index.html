@@ -35,6 +35,19 @@
         <h1 class="text-gradient">L'IA dans le développement d'application</h1>
         <h2 class="subtitle">État des lieux et pratique — Équipe RockSolid, Division
           informatique</h2>
+        <div class="glass-card" style="margin-top: 2rem; padding: 1.2rem 1.6rem; display: inline-flex; align-items: center; gap: 1.4rem; width: fit-content; max-width: 100%; border: 2px solid var(--unige-pink-bright); box-shadow: 0 0 24px rgba(207, 0, 99, 0.45);">
+          <div id="lecture-qr" style="background: #fff; padding: 0.5rem; border-radius: 12px; line-height: 0;">
+            <canvas id="lecture-qr-canvas" width="140" height="140"></canvas>
+          </div>
+          <div style="text-align: left;">
+            <div style="font-size: 1.2rem; color: #fff; font-weight: 600; letter-spacing: 0.01em;">Acces direct aux slides</div>
+            <a href="https://tinyurl.com/ai-dev-slides" target="_blank" rel="noopener noreferrer"
+               style="display: inline-block; margin-top: 0.35rem; font-size: 1.45rem; font-weight: 700; color: var(--unige-pink-bright); text-decoration: none;">
+              tinyurl.com/ai-dev-slides
+            </a>
+            <div style="margin-top: 0.35rem; font-size: 1rem; color: var(--text-muted);">Scannez ou tapez le lien sur votre ordinateur</div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -734,6 +747,7 @@
     // ─── VOTE PAGE URL ───
     // Set this to wherever you host vote.html (e.g. GitHub Pages)
     const VOTE_URL = "https://tinyurl.com/vote-slides";
+    const LECTURE_URL = "https://tinyurl.com/ai-dev-slides";
 
     // Init Firebase
     const app = firebase.initializeApp(firebaseConfig);
@@ -802,6 +816,27 @@
       }
     });
 
+    // ── Generate hero slide QR for desktop access ──
+    const lectureQrContainer = document.getElementById('lecture-qr');
+    const lectureQrCanvas = document.getElementById('lecture-qr-canvas');
+    if (lectureQrContainer && LECTURE_URL) {
+      if (lectureQrCanvas) {
+        lectureQrCanvas.remove();
+      }
+      try {
+        new QRCode(lectureQrContainer, {
+          text: LECTURE_URL,
+          width: 140,
+          height: 140,
+           colorDark: "#151515",
+           colorLight: "#ffffff",
+           correctLevel: QRCode.CorrectLevel.M
+         });
+      } catch (e) {
+        console.warn('Lecture QR generation failed:', e);
+      }
+    }
+
     // Bar colors
     const barColors = ['#CF0063', '#5ba9ff', '#9f86ff', '#ffb648', '#4ade80'];
 
@@ -835,15 +870,44 @@
       }
     }
 
-    function renderPreview(view) {
-      if (view.questionDisplay) {
-        view.questionDisplay.textContent = view.previewQuestion;
+    function showPoll(view) {
+      const qrColumn = view.qrContainer && view.qrContainer.parentElement;
+      if (qrColumn) {
+        qrColumn.style.display = '';
       }
-      renderBarsForView(view, view.previewOptions, {});
+      if (view.questionDisplay) {
+        view.questionDisplay.style.display = '';
+        view.questionDisplay.style.textAlign = '';
+      }
+      if (view.barsContainer) {
+        view.barsContainer.style.display = '';
+      }
       if (view.totalDisplay) {
-        view.totalDisplay.textContent = '0 vote';
+        view.totalDisplay.style.display = '';
       }
     }
+
+    function renderPollNotReady(view) {
+      const qrColumn = view.qrContainer && view.qrContainer.parentElement;
+      if (qrColumn) {
+        qrColumn.style.display = '';
+      }
+      if (view.questionDisplay) {
+        view.questionDisplay.textContent = '';
+        view.questionDisplay.style.display = 'none';
+      }
+      if (view.barsContainer) {
+        view.barsContainer.style.display = 'none';
+        view.barsContainer.innerHTML = '';
+      }
+      if (view.totalDisplay) {
+        view.totalDisplay.style.display = 'none';
+        view.totalDisplay.textContent = '';
+      }
+    }
+
+    // Start with a neutral state until an active poll is published.
+    pollViews.forEach(renderPollNotReady);
 
     // Listen for active poll — update all views simultaneously
     let currentResultsRef = null;
@@ -852,7 +916,7 @@
       const poll = snapshot.val();
 
       if (!poll || !poll.active) {
-        pollViews.forEach(renderPreview);
+        pollViews.forEach(renderPollNotReady);
         if (currentResultsRef) {
           currentResultsRef.off();
           currentResultsRef = null;
@@ -861,6 +925,7 @@
       }
 
       pollViews.forEach((view) => {
+        showPoll(view);
         if (view.questionDisplay) {
           view.questionDisplay.textContent = poll.question || '';
         }
